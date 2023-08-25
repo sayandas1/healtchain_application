@@ -18,6 +18,7 @@ import AdmissionForm from "./components/Admission";
 import DischargeForm from "./components/Discharge";
 import UploadImagesForm from "./components/UploadImagesForm";
 import HealthStaffDashboard from "./components/healthStaffDashbaord";
+import PatientEditPage from "./components/patientEditPage";
 
 function App() {
   return (
@@ -55,6 +56,7 @@ function App() {
           <Route path="/admission" element={<AdmissionForm />} />
           <Route path="/discharge" element={<DischargeForm />} />
           <Route path="/upload-images-form" element={<UploadImagesForm />} />
+          <Route path="/edit_patient/:id" element={<PatientEditPage />} />
         </Routes>
       </Router>
     </div>

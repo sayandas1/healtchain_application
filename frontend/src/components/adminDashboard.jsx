@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import jwtDecode from "jwt-decode";
 import { useNavigate } from "react-router";
+import { Link } from "react-router-dom";
 
 const AdminDashboard = () => {
   const [users, setUsers] = useState([]);
@@ -8,6 +9,10 @@ const AdminDashboard = () => {
   const [selectedRole, setSelectedRole] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
   const [result, setResult] = useState("");
+  const [patients, setPatients] = useState([]);
+  const [doctors, setDoctors] = useState([]);
+  const [admins, setAdmins] = useState([]);
+  const [healthStaffs, setHealthStaffs] = useState([]);
 
   const navigate = useNavigate();
   const token = localStorage.getItem("jwtToken");
@@ -24,7 +29,18 @@ const AdminDashboard = () => {
     })
       .then((response) => response.json())
       .then((data) => {
+        const patientsData = data.filter((user) => user.role === "Patient");
+        const doctorsData = data.filter((user) => user.role === "Doctor");
+        const adminsData = data.filter((user) => user.role === "Admin");
+        const healthStaffsData = data.filter(
+          (user) => user.role === "Health Staff"
+        );
+
         setUsers(data);
+        setPatients(patientsData);
+        setDoctors(doctorsData);
+        setAdmins(adminsData);
+        setHealthStaffs(healthStaffsData);
       });
 
     // Check if the logged-in user is an admin
@@ -52,6 +68,88 @@ const AdminDashboard = () => {
         setUsers(data);
         setSelectedUserId("");
         setSelectedRole("");
+      });
+  };
+
+  // const handleDeleteUser = (userId) => {
+  //   fetch(`http://localhost:5000/api/dashboard/users/${userId}`, {
+  //     method: "DELETE",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //       Authorization: token,
+  //     },
+  //   })
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       // Update the respective users array based on their role
+  //       const updatedPatients = patients.filter(
+  //         (patient) => patient._id !== userId
+  //       );
+  //       setPatients(updatedPatients);
+
+  //       const updatedDoctors = doctors.filter(
+  //         (doctor) => doctor._id !== userId
+  //       );
+  //       setDoctors(updatedDoctors);
+
+  //       const updatedAdmins = admins.filter((admin) => admin._id !== userId);
+  //       setAdmins(updatedAdmins);
+
+  //       const updatedHealthStaffs = healthStaffs.filter(
+  //         (healthStaff) => healthStaff._id !== userId
+  //       );
+  //       setHealthStaffs(updatedHealthStaffs);
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error deleting user:", error);
+  //     });
+  // };
+
+  const handleDeleteUser = (userId, role) => {
+    let deleteEndpoint = "";
+
+    // Determine the delete endpoint based on the user's role
+    if (role === "Patient") {
+      deleteEndpoint = `http://localhost:5000/api/dashboard/users/patients/${userId}`;
+    } else if (role === "Doctor") {
+      deleteEndpoint = `http://localhost:5000/api/dashboard/users/doctors/${userId}`;
+    } else if (role === "Admin") {
+      deleteEndpoint = `http://localhost:5000/api/dashboard/users/admins/${userId}`;
+    } else if (role === "Health Staff") {
+      deleteEndpoint = `http://localhost:5000/api/dashboard/users/healthstaffs/${userId}`;
+    }
+
+    // Send a DELETE request to the appropriate endpoint
+    fetch(deleteEndpoint, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: token,
+      },
+    })
+      .then((response) => response.json())
+      .then(() => {
+        // Refresh the user lists based on their roles
+        if (role === "Patient") {
+          setPatients((prevPatients) =>
+            prevPatients.filter((patient) => patient._id !== userId)
+          );
+        } else if (role === "Doctor") {
+          setDoctors((prevDoctors) =>
+            prevDoctors.filter((doctor) => doctor._id !== userId)
+          );
+        } else if (role === "Admin") {
+          setAdmins((prevAdmins) =>
+            prevAdmins.filter((admin) => admin._id !== userId)
+          );
+        } else if (role === "Health Staff") {
+          setHealthStaffs((prevHealthStaffs) =>
+            prevHealthStaffs.filter((healthStaff) => healthStaff._id !== userId)
+          );
+        }
+      })
+      .catch((error) => {
+        console.error("Error deleting user:", error);
       });
   };
 
@@ -103,6 +201,7 @@ const AdminDashboard = () => {
             <option value="Doctor">Doctor</option>
             <option value="Patient">Patient</option>
             <option value="Health Staff">Health Staff</option>{" "}
+            <option value="Admin">Admin</option>
             {/* Include Health Staff role */}
           </select>
           <button onClick={handleRoleAssignment}>Assign Role</button>
@@ -120,8 +219,93 @@ const AdminDashboard = () => {
       {/* Button to trigger the calculation */}
       <button onClick={calculateSum}>Calculate Sum</button>
 
+      <div>
+        <h2> Add users</h2>
+        <div>
+          <button onClick={() => navigate("/admin-registration")}>
+            Add admin
+          </button>
+          <button onClick={() => navigate("/doctor-registration")}>
+            Add doctor
+          </button>
+          <button onClick={() => navigate("/register")}>Add patient</button>
+          <button onClick={() => navigate("/register-health-staff")}>
+            Add health staff
+          </button>
+        </div>
+      </div>
+
       {/* Display the result */}
       {result !== "" && <p>Sum: {result}</p>}
+
+      <div>
+        <h2>Patients List</h2>
+        <ul>
+          {patients?.map((patient) => (
+            <li key={patient._id}>
+              {patient.firstName} {patient.lastName} - Role: {patient.role}
+              <Link to={`/edit_patient/${patient._id}`}>
+                <button>Edit</button>
+              </Link>
+              <button
+                onClick={() => handleDeleteUser(patient._id, patient.role)}
+              >
+                Delete
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div>
+        <h2>Doctors List</h2>
+        <ul>
+          {doctors?.map((doctor) => (
+            <li key={doctor._id}>
+              {doctor.firstName} {doctor.lastName} - Role: {doctor.role}
+              <button>Edit</button>
+              <button onClick={() => handleDeleteUser(doctor._id, doctor.role)}>
+                Delete
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div>
+        <h2>Admins List</h2>
+        <ul>
+          {admins?.map((admin) => (
+            <li key={admin._id}>
+              {admin.firstName} {admin.lastName} - Role: {admin.role}
+              <button>Edit</button>
+              <button onClick={() => handleDeleteUser(admin._id, admin.role)}>
+                Delete
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div>
+        <h2>Health Staff List</h2>
+        <ul>
+          {healthStaffs?.map((healthStaff) => (
+            <li key={healthStaff._id}>
+              {healthStaff.firstName} {healthStaff.lastName} - Role:{" "}
+              {healthStaff.role}
+              <button>Edit</button>
+              <button
+                onClick={() =>
+                  handleDeleteUser(healthStaff._id, healthStaff.role)
+                }
+              >
+                Delete
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 };

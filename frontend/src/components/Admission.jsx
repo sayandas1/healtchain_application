@@ -6,6 +6,7 @@ const AdmissionForm = () => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
+    patientId: "",
     admissionDate: "",
     admissionTime: "",
     chiefProblem: "",
@@ -71,6 +72,15 @@ const AdmissionForm = () => {
       <Typography variant="h5" gutterBottom>
         Admission Details
       </Typography>
+      <TextField
+        label="Patient Id"
+        name="patientId"
+        value={formData.patientId}
+        onChange={handleChange}
+        fullWidth
+        required
+        style={{ marginBottom: "10px" }}
+      />
       <div
         style={{ display: "flex", alignItems: "center", marginBottom: "10px" }}
       >
@@ -90,6 +100,7 @@ const AdmissionForm = () => {
           style={{ flex: 1, marginRight: "10px" }}
         />
       </div>
+
       <div
         style={{ display: "flex", alignItems: "center", marginBottom: "10px" }}
       >

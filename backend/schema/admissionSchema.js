@@ -2,8 +2,8 @@ const mongoose = require("mongoose");
 
 const admissionSchema = new mongoose.Schema({
   patientId: {
-    type: mongoose.Schema.Types.ObjectId, // Reference to the user/patient document
-    ref: "User", // This refers to the "User" model you've defined
+    type: String,
+
     required: true,
   },
   admissionDate: { type: Date, required: true },

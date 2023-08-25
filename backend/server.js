@@ -22,6 +22,7 @@ const healthStaffLoginRoutes = require("./Routes/healthStaffLoginRoutes");
 const healthStaffRegistration = require("./Routes/healthStaffRegistration");
 const healthStaffDashboardRoutes = require("./Routes/healthStaffDashbaord");
 const calculateRoute = require("./Routes/calculateRoutes");
+const patientEdit = require("./Routes/patientEditRoutes");
 const app = express();
 
 app.use(bodyParser.json());
@@ -72,6 +73,7 @@ app.use("/api/login/health-staff", healthStaffLoginRoutes);
 app.use("/api/register-health-staff", healthStaffRegistration); // Corrected route path
 app.use("/api/dashboard/health-staff", healthStaffDashboardRoutes);
 app.use("/api/calculate-sum", calculateRoute);
+app.use("/api/patients", patientEdit);
 
 // Add a route handler for the home route ('/') to provide a response or redirect to the login page
 app.get("/", (req, res) => {

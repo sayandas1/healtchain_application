@@ -25,42 +25,19 @@ const verifyToken = (req, res, next) => {
 };
 
 // API route to save Admission form data
-router.post("/", verifyToken, async (req, res) => {
-  console.log("Admission form submission received");
-  const userId = req.params.userId;
-
+router.post("/", async (req, res) => {
   try {
-    // const admissionData = req.params;
-    // const userId = admissionData.userId; // Extract userId from admission data
+    const admissionData = req.body;
 
-    console.log("Attempting to fetch user by ID:", userId);
-    const patient = await User.findById(userId);
+    // Create a new admission record in the database
+    const newAdmission = await Admission.create(admissionData);
 
-    if (!patient) {
-      console.log("Patient not found for ID:", userId);
-      return res.status(404).json({ error: "Patient not found." });
-    }
-
-    console.log("Patient found:", patient);
-
-    // Save the Admission data to the database
-    const newAdmission = new Admission({
-      // ...admissionData,
-      ...req.body,
-      userId,
-    });
-    await newAdmission.save();
-
-    res.status(201).json({
-      success: true,
-      message: "Admission details saved successfully!",
-    });
+    res.status(201).json(newAdmission); // Return the newly created admission record
   } catch (error) {
-    console.error("An error occurred during admission form submission:", error);
-    res.status(500).json({
-      error:
-        "An error occurred during admission form submission. Please try again later.",
-    });
+    console.error("Error submitting admission form:", error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while submitting admission form" });
   }
 });
 

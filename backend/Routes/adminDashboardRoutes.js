@@ -74,6 +74,72 @@ router.post("/admin/assign-role/:userId", async (req, res) => {
   }
 });
 
+// Delete patient
+router.delete("/patients/:userId", async (req, res) => {
+  try {
+    const userId = req.params.userId;
+
+    // Delete the patient from the Patient collection
+    await Patient.findByIdAndDelete(userId);
+
+    // Return a success message
+    res.json({ message: "Patient deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting patient:", error);
+    res.status(500).json({ error: "An error occurred while deleting patient" });
+  }
+});
+
+// Delete doctor
+router.delete("/doctors/:userId", async (req, res) => {
+  try {
+    const userId = req.params.userId;
+
+    // Delete the doctor from the Doctor collection
+    await Doctor.findByIdAndDelete(userId);
+
+    // Return a success message
+    res.json({ message: "Doctor deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting doctor:", error);
+    res.status(500).json({ error: "An error occurred while deleting doctor" });
+  }
+});
+
+// Delete admin
+router.delete("/admins/:userId", async (req, res) => {
+  try {
+    const userId = req.params.userId;
+
+    // Delete the admin from the Admin collection
+    await Admin.findByIdAndDelete(userId);
+
+    // Return a success message
+    res.json({ message: "Admin deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting admin:", error);
+    res.status(500).json({ error: "An error occurred while deleting admin" });
+  }
+});
+
+// Delete health staff
+router.delete("/healthstaffs/:userId", async (req, res) => {
+  try {
+    const userId = req.params.userId;
+
+    // Delete the health staff from the HealthStaff collection
+    await HealthStaff.findByIdAndDelete(userId);
+
+    // Return a success message
+    res.json({ message: "Health Staff deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting health staff:", error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while deleting health staff" });
+  }
+});
+
 router.post("/logout", (req, res) => {
   try {
     // Clear the authorization token on the client-side
